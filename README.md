@@ -98,3 +98,7 @@ Optional `_business` metadata is committed atomically with changes. Stable opaqu
 ## Tests
 
 `npm test` covers schema preservation, migration, ambiguous IDs, validation, locking, revision conflicts, UTF-8 parsing, CLI, API, statistics and calendar packing in temporary synthetic stores.
+
+## Praxis integration
+
+The app-owned [provider contract](docs/PRAXIS-PROVIDER.md) supplies authorized source-backed cards and data-source metadata without exposing a new HTTP endpoint. Run `npm run test:provider` for the isolated provider checks.
