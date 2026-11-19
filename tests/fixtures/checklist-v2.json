@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "updated": "2027-01-16",
+  "recurring": [
+    {
+      "id": "sample-routine",
+      "text": "Check sample gauges",
+      "tags": [
+        "Review"
+      ],
+      "estHours": 1
+    },
+    {
+      "id": "sample-template",
+      "text": "Review sample kit",
+      "tags": [
+        "Review"
+      ],
+      "state": "legacy"
+    }
+  ],
+  "plans": [
+    {
+      "id": "sample-plan",
+      "text": "Arrange the test kit",
+      "tags": [],
+      "completedAt": "2027-01-14"
+    }
+  ],
+  "pool": [],
+  "history": [
+    {
+      "id": "sample-finished",
+      "text": "Example measurement",
+      "tags": []
+    },
+    {
+      "id": "sample-dupe",
+      "text": "Example duplicate one",
+      "tags": []
+    },
+    {
+      "id": "sample-dupe",
+      "text": "Example duplicate two",
+      "tags": []
+    }
+  ]
+}

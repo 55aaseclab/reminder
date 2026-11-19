@@ -1,0 +1,18 @@
+{
+  "name": "reminder",
+  "version": "1.0.7",
+  "private": true,
+  "description": "个人提醒与任务管理，自用版",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "reminder": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "cli": "node src/cli.js",
+    "test": "node --test"
+  }
+}

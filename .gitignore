@@ -1,0 +1,3 @@
+/data/*
+!/data/checklist.example.json
+/node_modules/

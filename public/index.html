@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title data-zh="Reminder · 个人提醒">Reminder · Personal reminders</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">Reminder<span><span data-zh="个人提醒">Personal reminders</span></span></div>
+      <nav id="cards" aria-label="Reminder views" data-zh-label="提醒视图"></nav>
+    </aside>
+    <main>
+      <header class="toolbar">
+        <button type="button" class="locale-choice" data-language-switch lang="zh-CN">简体中文</button>
+        <nav class="page-tabs" aria-label="Pages" data-zh-label="页面">
+          <button type="button" data-page="tasks" aria-current="page"><span data-zh="任务">Tasks</span></button>
+          <button type="button" data-page="stats"><span data-zh="统计">Statistics</span></button>
+        </nav>
+      </header>
+      <div id="network-error" class="alert" role="alert" hidden><span></span><button type="button" id="retry"><span data-zh="重试">Retry</span></button></div>
+      <p id="notice" class="notice" role="status" aria-live="polite"></p>
+      <section id="tasks-page" aria-labelledby="view-title">
+        <h1 id="view-title"><span data-zh="例行">Routines</span></h1>
+        <div id="task-content" aria-live="polite"><span data-zh="加载中…">Loading…</span></div>
+      </section>
+      <section id="stats-page" aria-labelledby="stats-title" hidden>
+        <h1 id="stats-title"><span data-zh="统计">Statistics</span></h1>
+        <form id="stats-controls" class="stats-controls">
+          <label><span data-zh="周期">Period</span><select id="stats-period"><option value="week"><span data-zh="每周">Weekly</span></option><option value="month"><span data-zh="每月">Monthly</span></option></select></label>
+          <label><span data-zh="所在日期">Date</span><input type="date" id="stats-anchor" required></label>
+          <button type="submit"><span data-zh="查看">Show</span></button>
+        </form>
+        <div id="stats-content" aria-live="polite"></div>
+      </section>
+      <footer id="sync-status"><span data-zh="正在读取数据…">Loading data…</span></footer>
+    </main>
+  </div>
+
+
+
+</body>
+</html>
