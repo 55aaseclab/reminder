@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "reminder",
+  "version": "1.0.8",
+  "kind": "app",
+  "name": "Reminder",
+  "description": "Reminders and tasks",
+  "labels": {
+    "en": {
+      "name": "Reminder",
+      "description": "Reminders and tasks"
+    },
+    "zh": {
+      "name": "Reminder",
+      "description": "提醒与任务"
+    }
+  },
+  "icon": "public/praxis-icon.svg",
+  "iconAliases": [
+    "/reminder-icon.svg"
+  ],
+  "path": "/",
+  "port": 4322,
+  "documents": {
+    "prd": {
+      "en": "docs/PRD.en.md",
+      "zh": "docs/PRD.md"
+    }
+  }
+}
