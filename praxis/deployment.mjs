@@ -1,8 +1,10 @@
+import { createDemoIntegration } from './demo.mjs';
 import { adminBootstrap } from './admin-bootstrap.mjs';
 import { createStackIntegration } from './stack.mjs';
 import { localCompose } from './local-compose.mjs';
 import { createManagedService } from './managed-service.mjs';
 export function createDeploymentIntegration() { return {
+  demo: createDemoIntegration(),
   adminBootstrap,
   stack: createStackIntegration(),
   localCompose,
