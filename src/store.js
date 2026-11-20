@@ -1,3 +1,4 @@
+import { isDatabase, readDocument, writeDocument, hasDocument, transaction } from './sqlite-document.mjs';
 import { open, readFile, rename, unlink, stat, mkdir, copyFile } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,7 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { captureBusinessResources, reconcileBusinessResources, validateBusinessMetadata } from './business-metadata.js';
 
 export const COLLECTIONS = ['recurring', 'plans', 'pool', 'history'];
-export const DEFAULT_FILE = fileURLToPath(new URL('../data/checklist.json', import.meta.url));
+export const DEFAULT_FILE = fileURLToPath(new URL('../data/reminder.db', import.meta.url));
 export class ReminderError extends Error {
   constructor(message, status = 400, code = 'INVALID_INPUT') {
     super(message); this.status = status; this.code = code;
@@ -68,8 +69,9 @@ function find(data, selector) {
   return found[0];
 }
 export class Store {
-  constructor(file = process.env.REMINDER_DATA || DEFAULT_FILE) { this.file = resolve(file); }
+  constructor(file = process.env.REMINDER_DATA || DEFAULT_FILE, { spaceId = process.env.REMINDER_SPACE_ID || 'local' } = {}) { this.file = resolve(file); this.spaceId = spaceId; }
   async read() {
+    if (isDatabase(this.file)) { if (!hasDocument(this.file, this.spaceId)) fail('Database record not found; use explicit import first', 404, 'NOT_FOUND'); const row = readDocument(this.file, this.spaceId); return { data: validateDocument(row.value), revision: row.revision }; }
     let raw;
     try { raw = await readFile(this.file, 'utf8'); }
     catch (error) { if (error.code === 'ENOENT') fail('Data file not found; use import first', 404, 'NOT_FOUND'); throw error; }
@@ -79,6 +81,7 @@ export class Store {
     return { data, revision: digest(raw) };
   }
   async lock(fn) {
+    if (isDatabase(this.file)) return transaction(this.file, fn);
     await mkdir(dirname(this.file), { recursive: true });
     const lockFile = `${this.file}.lock`, deadline = Date.now() + 5000;
     let handle;
@@ -106,6 +109,7 @@ export class Store {
     finally { await handle.close(); await unlink(lockFile).catch(() => {}); }
   }
   async atomicWrite(raw) {
+    if (isDatabase(this.file)) { await writeDocument(this.file, this.spaceId, 'state', validateDocument(JSON.parse(raw)), digest(raw), raw); return; }
     const tmp = `${this.file}.${randomUUID()}.tmp`;
     let handle;
     try {
@@ -191,11 +195,11 @@ export class Store {
     validateDocument(data);
     return this.lock(async () => {
       let exists = true;
-      try { await stat(this.file); } catch (e) { if (e.code === 'ENOENT') exists = false; else throw e; }
+      try { if (isDatabase(this.file)) { if (!hasDocument(this.file, this.spaceId)) throw Object.assign(new Error('Missing record'), { code: 'ENOENT' }); } else await stat(this.file); } catch (e) { if (e.code === 'ENOENT') exists = false; else throw e; }
       if (exists && !replace) fail('Destination already contains data; use --replace explicitly to overwrite it (a .bak backup will be kept)', 409, 'ALREADY_EXISTS');
-      if (exists) await copyFile(this.file, `${this.file}.bak`);
+      if (exists && isDatabase(this.file)) { const previous = await this.read(); const { writeFile } = await import('node:fs/promises'); await writeFile(`${this.file}.${this.spaceId}.bak.json`, JSON.stringify(previous.data, null, 2) + '\n', { mode: 0o600 }); } else if (exists) await copyFile(this.file, `${this.file}.bak`);
       await this.atomicWrite(raw);
-      return { data, revision: digest(raw), backup: exists ? `${this.file}.bak` : null };
+      return { data, revision: digest(raw), backup: exists ? isDatabase(this.file) ? `${this.file}.${this.spaceId}.bak.json` : `${this.file}.bak` : null };
     });
   }
 }

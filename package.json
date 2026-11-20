@@ -1,11 +1,11 @@
 {
   "name": "reminder",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "private": true,
   "description": "个人提醒与任务管理，自用版",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.16.0"
   },
   "bin": {
     "reminder": "src/cli.js"
@@ -14,6 +14,7 @@
     "start": "node src/server.js",
     "cli": "node src/cli.js",
     "test": "node --test",
-    "test:provider": "node --test provider-tests/praxis-provider.check.mjs"
+    "test:provider": "node --test provider-tests/praxis-provider.check.mjs",
+    "storage:migrate": "node src/migrate-sqlite.mjs"
   }
 }

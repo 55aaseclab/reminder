@@ -20,7 +20,7 @@ const metadata = {
       "labels": {
         "zh": "空间清单"
       },
-      "kind": "json",
+      "kind": "sqlite",
       "location": {
         "env": "REMINDER_BUSINESS_SPACES_FILE",
         "map": "spaces"
@@ -32,7 +32,7 @@ const metadata = {
       "labels": {
         "zh": "独立清单"
       },
-      "kind": "json",
+      "kind": "sqlite",
       "location": {
         "env": "REMINDER_DATA"
       },

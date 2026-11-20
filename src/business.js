@@ -1,3 +1,4 @@
+import { isDatabase, beforeCommit } from './sqlite-document.mjs';
 import { createHash, createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
 import { readFileSync, realpathSync, lstatSync } from 'node:fs';
 import { isAbsolute, resolve, dirname, basename } from 'node:path';
@@ -86,9 +87,9 @@ export class BusinessService {
     for (const [spaceId, file] of Object.entries(spaces)) {
       if (!identifier(spaceId) || typeof file !== 'string' || !isAbsolute(file)) throw new Error('Each business space requires an identifier and absolute data file');
       const canonical = canonicalPath(file);
-      if (paths.has(canonical)) throw new Error('Business spaces must use distinct data files');
+      if (paths.has(canonical) && !isDatabase(canonical)) throw new Error('Business spaces must use distinct data files');
       paths.add(canonical);
-      this.stores.set(spaceId, new Store(canonical));
+      this.stores.set(spaceId, new Store(canonical, { spaceId }));
     }
     this.key = Buffer.from(key);
     this.now = now;
@@ -97,6 +98,7 @@ export class BusinessService {
   async snapshot(store) {
     try { return await store.read(); }
     catch (error) {
+      if (error.code === 'NOT_FOUND' && process.env.REMINDER_REQUIRE_DATABASE==='1' && isDatabase(store.file)) fail('Configured reminder database namespace is missing',503,'DATA_UNAVAILABLE');
       if (error.code === 'NOT_FOUND') return { data: empty(), revision: 'uninitialized', missing: true };
       throw error;
     }
@@ -236,6 +238,7 @@ export class BusinessService {
       data.updated = timestamp(new Date(this.now())).slice(0, 10);
       validateDocument(data);
       if (claims.expiresAt <= this.now()) fail('Business assertion expired before commit', 401, 'INVALID_ASSERTION');
+      if(isDatabase(store.file))beforeCommit(store.file,()=>{if(claims.expiresAt<=this.now())fail('Business assertion expired before commit',401,'INVALID_ASSERTION');});
       await store.atomicWrite(`${JSON.stringify(data, null, 2)}\n`);
       return response;
     });

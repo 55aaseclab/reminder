@@ -4,18 +4,18 @@ export function createStorageIntegration() { return {
   inventory: { project: projectInventory, mapping: { field: 'spacesFile', input: 'reminderSpaces' } },
   "rootId": "reminder",
   "paths": {
-    "reminder": "spaces"
+    "reminder": ""
   },
   "sources": [
     {
-      "kind": "json",
-      "schema": "reminder-v2",
+      "kind": "sqlite",
+
       "spaceMap": "reminder",
       "basePath": "reminder",
-      "filename": "checklist.json",
-      "primaryTarget": "checklist.json",
+      "filename": "reminder.db",
+      "primaryTarget": "reminder.db",
       "registerDefault": true,
-      "nativeSource": "data/checklist.json"
+      "nativeSource": "data/reminder.db"
     }
   ],
   "omissions": [],
@@ -26,8 +26,8 @@ export function createStorageIntegration() { return {
   "fileField": "spacesFile",
     "assertionInput": "reminderSpaces",
     "path": "reminder",
-    "mode": "space",
-    "filename": "checklist.json"
+    "mode": "basename",
+    "filename": "reminder.db"
   }
 },
   activation: { skipService: true, stackFlag: "--without-reminder", storageConfigFlag: "dockerWithoutReminder", requireManaged: true, mappingFileField: "spacesFile", sourceMapKey: "reminder" },
@@ -38,9 +38,9 @@ export function createStorageIntegration() { return {
     for (const [spaceId, file] of Object.entries(mapping.spaces)) {
       if (!/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,199}$/.test(spaceId)) ctx.fail('INVALID_CONFIG', 'Reminder space identifier is invalid');
       const source = await ctx.inspect(file);
-      if (mapped.has(source.path)) ctx.fail('INVALID_BACKUP_SOURCE', 'Reminder spaces must not share the same data file');
+      const database=/\.(?:db|sqlite3?)$/i.test(source.path); if(mapped.has(source.path)){if(database)continue;ctx.fail('INVALID_BACKUP_SOURCE','JSON spaces must have distinct files');}
       mapped.add(source.path); const opaqueId = ctx.opaqueSpaceId(spaceId);
-      if (!await ctx.register({ kind: 'json', source: source.path, target: `spaces/${opaqueId}.json`, schema: 'reminder-v2' }, { optional: !active.has(spaceId) })) ctx.omit(opaqueId + ':uninitialized');
+      if (!await ctx.register({ kind: database?'sqlite':'json', source: source.path, target: database?'reminder.db':`spaces/${opaqueId}.json`, ...(!database?{schema:'reminder-v2'}:{}) }, { optional: !Object.entries(mapping.spaces).some(([id,path])=>path===file&&active.has(id)) })) ctx.omit(opaqueId + ':uninitialized');
     }
   } }
 }; }

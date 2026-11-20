@@ -16,6 +16,6 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node public/ ./public/
 COPY --chown=node:node praxis-provider.mjs ./
-ENV PORT=4322 REMINDER_DATA=/data/checklist.json
+ENV PORT=4322 REMINDER_DATA=/data/reminder.db
 EXPOSE 4322
 CMD ["node", "src/server.js"]

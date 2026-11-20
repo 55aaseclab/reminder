@@ -6,8 +6,8 @@ export function createDemoIntegration() {
     supported: true, module: 'praxis/demo.mjs',
     plan({ dataDir, port }) {
       return {
-        steps: [{ command: 'node', args: ['src/cli.js', 'import', 'data/checklist.example.json'], environment: { REMINDER_DATA: join(dataDir, 'checklist.json') } }],
-        server: { args: ['src/server.js'], environment: { REMINDER_DATA: join(dataDir, 'checklist.json') } },
+        steps: [{ command: 'node', args: ['src/cli.js', 'import', 'data/checklist.example.json'], environment: { REMINDER_DATA: join(dataDir, 'reminder.db') } }],
+        server: { args: ['src/server.js'], environment: { REMINDER_DATA: join(dataDir, 'reminder.db') } },
       };
     },
   };

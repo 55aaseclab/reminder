@@ -1,3 +1,4 @@
+import { isDatabase } from '../src/sqlite-document.mjs';
 import { dirname, resolve } from 'node:path';
 export async function createManagedService({ app: reminder, config, corePort: port, uid, gid, workspace, controlDirectory, stateDirectories, appDirectories, readOnlyFiles, privatePath, readPrivateJson, distinctDirectories, mount, overlaps, isWithin, fail, build }) {
   const services = {}, ports = [];
@@ -9,7 +10,7 @@ export async function createManagedService({ app: reminder, config, corePort: po
     const mapping = await readPrivateJson(reminder.spacesFile);
     if (!mapping || typeof mapping !== 'object' || Array.isArray(mapping) || Object.keys(mapping).some(key => key !== 'spaces') || !mapping.spaces || typeof mapping.spaces !== 'object' || Array.isArray(mapping.spaces) || Object.keys(mapping.spaces).sort().join('\0') !== [...reminder.spaces].sort().join('\0')) fail('INVALID_SPACE_MAPPING', 'Reminder mapping must exactly match its configured business spaces.');
     const dataFiles = Object.values(mapping.spaces);
-    if (new Set(dataFiles).size !== dataFiles.length || dataFiles.some(file => typeof file !== 'string' || !file.endsWith('.json'))) fail('INVALID_SPACE_MAPPING', 'Reminder spaces require distinct JSON data files.');
+    if (new Set(dataFiles).size !== dataFiles.length && !dataFiles.every(isDatabase) || dataFiles.some(file => typeof file !== 'string' || !(file.endsWith('.json') || isDatabase(file)))) fail('INVALID_SPACE_MAPPING', 'Reminder spaces require distinct JSON data files.');
     for (const file of dataFiles) await privatePath(file, { allowMissing: true, data: true, maxSize: Infinity });
     const dataDirectories = distinctDirectories(dataFiles.map(file => dirname(file)));
     appDirectories.push(...dataDirectories);
