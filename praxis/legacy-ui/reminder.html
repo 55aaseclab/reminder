@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" class="reminder-app">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title data-zh="Reminder · 个人提醒">Reminder · Personal reminders</title>
+  <link rel="stylesheet" href="/reminder-view.css">
+  <script type="module" src="/reminder.js"></script>
+</head>
+<body data-praxis-i18n class="reminder-app">
+  <div class="shell">
+    <aside class="sidebar" aria-label="Reminder navigation" data-zh-label="提醒事项导航">
+      <div class="brand">Reminder<span><span data-zh="个人提醒">Personal reminders</span></span></div>
+      <label id="context-picker" class="context-picker" for="space" hidden><span><span data-zh="提醒列表">Reminder lists</span></span><select id="space" aria-label="Reminder lists" data-zh-label="提醒列表"></select></label>
+      <nav id="navigation" aria-label="Reminder views" data-zh-label="提醒事项视图">
+        <button type="button" class="card nav-entry on" data-view="routine" aria-current="page" disabled><span class="dot" aria-hidden="true">↻</span><span data-zh="例行">Routines</span><span class="n"></span></button>
+        <button type="button" class="card nav-entry" data-view="today" disabled><span class="dot" aria-hidden="true">日</span><span data-zh="今天">Today</span><span class="n"></span></button>
+        <button type="button" class="card nav-entry" data-view="scheduled" disabled><span class="dot" aria-hidden="true">月</span><span data-zh="计划">Scheduled</span><span class="n"></span></button>
+        <button type="button" class="card nav-entry" data-view="all" disabled><span class="dot" aria-hidden="true">☷</span><span data-zh="全部">All</span><span class="n"></span></button>
+        <button type="button" class="card nav-entry" data-view="flagged" disabled><span class="dot" aria-hidden="true">⚑</span><span data-zh="旗标">Flagged</span><span class="n"></span></button>
+        <button type="button" class="card nav-entry" data-view="completed" disabled><span class="dot" aria-hidden="true">✓</span><span data-zh="已完成">Completed</span><span class="n"></span></button>
+      </nav>
+    </aside>
+    <main id="main" aria-busy="true">
+      <header class="toolbar">
+        <nav class="page-tabs" aria-label="Pages" data-zh-label="页面">
+          <button type="button" data-page="tasks" aria-current="page"><span data-zh="任务">Tasks</span></button>
+          <button type="button" data-page="stats"><span data-zh="统计">Statistics</span></button>
+        </nav>
+      </header>
+      <div id="network-error" class="alert" role="alert" hidden><span></span><button type="button" id="retry"><span data-zh="重试">Retry</span></button></div>
+      <p id="notice" class="notice" role="status" aria-live="polite"></p>
+      <section id="tasks-page" aria-labelledby="view-title">
+        <h1 id="view-title"><span data-zh="例行">Routines</span></h1>
+        <div id="task-content" aria-live="polite"><span data-zh="加载中…">Loading…</span></div>
+      </section>
+      <section id="stats-page" aria-labelledby="stats-title" hidden>
+        <h1 id="stats-title"><span data-zh="统计">Statistics</span></h1>
+        <form id="stats-controls" class="stats-controls">
+          <label><span data-zh="周期">Period</span><select id="stats-period"><option value="week"><span data-zh="每周">Weekly</span></option><option value="month"><span data-zh="每月">Monthly</span></option></select></label>
+          <label><span data-zh="所在日期">Date</span><input type="date" id="stats-anchor" required></label>
+          <button type="submit"><span data-zh="查看">Show</span></button>
+        </form>
+        <div id="stats-content" aria-live="polite"></div>
+      </section>
+      <p id="sync-status" role="status"><span data-zh="正在读取数据…">Loading data…</span></p><span id="connection" class="connection-status" role="status"></span>
+      <noscript><p class="empty"><span data-zh="请启用 JavaScript 查看提醒事项。">Enable JavaScript to view reminders.</span></p></noscript>
+    </main>
+  </div>
+</body>
+</html>
